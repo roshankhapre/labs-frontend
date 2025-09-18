@@ -15,7 +15,7 @@ import {
   Phone,
   Mail,
 } from "lucide-react";
-import axios from "axios";
+import API, { createPaymentOrder, verifyPayment } from "@/api/axios"; // <<-- important!
 
 export default function BookingSection() {
   const [step, setStep] = useState(1);
@@ -65,10 +65,11 @@ export default function BookingSection() {
   const handlePayment = async () => {
     setIsLoading(true);
     try {
-      // Step 1: Create Razorpay Order
-      const { data } = await axios.post(
-        "http://localhost:5000/api/payments/create-order"
-      );
+      // Create order via your API wrapper (will use VITE_API_BASE_URL in prod)
+      // pass amount if your backend expects it; else backend can use default
+      const { data } = await createPaymentOrder({ amount: 50 });
+      // debug:
+      console.log("createPaymentOrder response:", data);
 
       if (!window.Razorpay) {
         alert("Razorpay SDK not loaded. Please refresh the page.");
@@ -76,57 +77,57 @@ export default function BookingSection() {
         return;
       }
 
-      // Step 2: Razorpay Options
       const options = {
-        key: data.key,
+        key: data.key, // razorpay key from backend
         amount: data.amount,
-        currency: data.currency,
+        currency: data.currency || "INR",
         order_id: data.order_id,
         name: "Lab Booking",
         description: "Appointment Booking Fee",
         handler: async function (response) {
+          setIsLoading(true);
           try {
-            // Step 3: Verify Payment
-            const verificationResponse = await axios.post(
-              "http://localhost:5000/api/payments/verify",
-              {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }
-            );
+            // Verify payment via API wrapper
+            const verificationResponse = await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
 
-            if (verificationResponse.data.success) {
-              // Step 4: Save Booking
-              const bookingRes = await axios.post(
-                "http://localhost:5000/api/bookings/public",
-                {
-                  name: form.name,
-                  email: form.email,
-                  phone: form.phone,
-                  address: form.address,
-                  appointmentDate: form.date,
-                  appointmentTime: form.time,
-                  amount: 50,
-                  paymentInfo: {
-                    razorpay_payment_id: response.razorpay_payment_id,
-                    razorpay_order_id: response.razorpay_order_id,
-                    razorpay_signature: response.razorpay_signature,
-                  },
-                }
-              );
+            console.log("verifyPayment response:", verificationResponse?.data);
 
-              if (bookingRes.data.success) {
+            if (verificationResponse?.data?.success) {
+              // Save booking using the API instance
+              const bookingRes = await API.post("/bookings/public", {
+                name: form.name,
+                email: form.email,
+                phone: form.phone,
+                address: form.address,
+                appointmentDate: form.date,
+                appointmentTime: form.time,
+                amount: 50,
+                paymentInfo: {
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_signature: response.razorpay_signature,
+                },
+              });
+
+              if (bookingRes?.data?.success) {
                 setStep(4);
               } else {
-                alert("Booking failed: " + bookingRes.data.message);
+                alert(
+                  "Booking failed: " + (bookingRes?.data?.message || "unknown")
+                );
               }
             } else {
               alert("Payment verification failed. Try again.");
             }
           } catch (err) {
             console.error("Error in payment handler:", err);
-            alert("An error occurred. Please contact support.");
+            alert(
+              "An error occurred while verifying/saving payment. Contact support."
+            );
           } finally {
             setIsLoading(false);
           }
@@ -142,11 +143,10 @@ export default function BookingSection() {
         },
       };
 
-      // Step 5: Open Razorpay
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (err) {
-      console.error("Razorpay error:", err);
+      console.error("Razorpay error (start):", err);
       alert("Failed to start payment. Try again.");
       setIsLoading(false);
     }
@@ -157,7 +157,6 @@ export default function BookingSection() {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDate = tomorrow.toISOString().split("T")[0];
 
-  // Keep step safe (1–4 only)
   const safeStep = Math.min(Math.max(step, 1), 4);
 
   return (
