@@ -9,7 +9,7 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import heroImage from "../../assets/examining-sample-with-microscope.webp";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 export default function HeroSection() {
   const texts = [
@@ -27,21 +27,21 @@ export default function HeroSection() {
       />
       <div className="absolute inset-0 z-0 bg-gradient-to-br from-blue-900/95 via-blue-800/90 to-purple-700/85"></div>
 
-      {/* Optional floating blurred blobs */}
-      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+      {/* Decorative blobs */}
+      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-12 py-16">
         {/* Left Content */}
         <div className="text-center lg:text-left lg:w-1/2">
           {/* Badge */}
-          <div className="inline-flex items-center bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full text-sm text-white mb-8">
+          <div className="inline-flex items-center bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full text-sm text-white mb-8 shadow-lg">
             <BadgeCheck className="w-4 h-4 mr-2 text-green-400" />
-            <span>Trusted by 50,000+ Patients</span>
+            <span>Indore’s Most Trusted Lab Services</span>
           </div>
 
-          {/* Animated Heading */}
+          {/* Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
             <span className="block">Your Health,</span>
             <span className="block mt-2">Our Priority</span>
@@ -62,21 +62,21 @@ export default function HeroSection() {
               <div className="text-gray-300 text-sm">Tests Available</div>
             </div>
             <div className="text-center lg:text-left">
-              <div className="text-3xl font-bold text-white">50+</div>
-              <div className="text-gray-300 text-sm">Cities Covered</div>
-            </div>
-            <div className="text-center lg:text-left">
               <div className="text-3xl font-bold text-white">24H</div>
               <div className="text-gray-300 text-sm">Report Delivery</div>
+            </div>
+            <div className="text-center lg:text-left">
+              <div className="text-3xl font-bold text-white">50K+</div>
+              <div className="text-gray-300 text-sm">Happy Patients</div>
             </div>
           </div>
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mb-12">
-            <button className="bg-green-500 hover:bg-green-600 text-white text-lg font-medium px-6 py-3 rounded-full shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2">
+            <button className="bg-green-500 hover:bg-green-600 text-white text-lg font-medium px-6 py-3 rounded-full shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2">
               Book Test Now <ArrowRight className="w-5 h-5" />
             </button>
-            <button className="border border-white text-white hover:bg-white hover:text-blue-800 text-lg font-medium px-6 py-3 rounded-full shadow-md hover:shadow-xl transition-all duration-300">
+            <button className="border border-white text-white hover:bg-white hover:text-blue-800 text-lg font-medium px-6 py-3 rounded-full shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
               View Packages
             </button>
           </div>
@@ -98,12 +98,12 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Right Content - Illustration */}
+        {/* Right Content - How it Works */}
         <div className="lg:w-1/2 flex justify-center">
           <div className="relative">
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 shadow-2xl max-w-md">
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 shadow-2xl max-w-md hover:shadow-3xl transition-all duration-300">
               <div className="flex justify-center mb-6">
-                <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center animate-bounce">
                   <TestTube className="w-10 h-10 text-white" />
                 </div>
               </div>
@@ -111,47 +111,41 @@ export default function HeroSection() {
                 How It Works
               </h3>
               <div className="space-y-4">
-                <div className="flex items-start">
-                  <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-4">
-                    1
+                {[
+                  {
+                    step: "1",
+                    title: "Book Online",
+                    desc: "Select test & schedule appointment",
+                  },
+                  {
+                    step: "2",
+                    title: "Home Collection",
+                    desc: "Certified technician visits your home",
+                  },
+                  {
+                    step: "3",
+                    title: "Get Reports",
+                    desc: "Receive digital reports within 24 hours",
+                  },
+                ].map((item) => (
+                  <div className="flex items-start" key={item.step}>
+                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-4">
+                      {item.step}
+                    </div>
+                    <div>
+                      <h4 className="text-white font-medium">{item.title}</h4>
+                      <p className="text-gray-300 text-sm">{item.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-white font-medium">Book Online</h4>
-                    <p className="text-gray-300 text-sm">
-                      Select test & schedule appointment
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-4">
-                    2
-                  </div>
-                  <div>
-                    <h4 className="text-white font-medium">Home Collection</h4>
-                    <p className="text-gray-300 text-sm">
-                      Certified technician visits your home
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-4">
-                    3
-                  </div>
-                  <div>
-                    <h4 className="text-white font-medium">Get Reports</h4>
-                    <p className="text-gray-300 text-sm">
-                      Receive digital reports within 24 hours
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* Floating elements */}
-            <div className="absolute -top-4 -right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+            {/* Floating badges */}
+            <div className="absolute -top-4 -right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
               Most Trusted
             </div>
-            <div className="absolute -bottom-4 -left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+            <div className="absolute -bottom-4 -left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-bounce">
               4.9/5 Rating
             </div>
           </div>
@@ -171,13 +165,10 @@ export default function HeroSection() {
   );
 }
 
-/* Helper Component: Animated Text Carousel */
+/* Animated Carousel with Fade + Slide */
 function AnimatedTextCarousel({ texts }) {
   const [index, setIndex] = useState(0);
-  const [rowH, setRowH] = useState(0);
-  const probeRef = useRef(null);
 
-  // Rotate text
   useEffect(() => {
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % texts.length);
@@ -185,40 +176,20 @@ function AnimatedTextCarousel({ texts }) {
     return () => clearInterval(id);
   }, [texts.length]);
 
-  // Measure height
-  useEffect(() => {
-    const measure = () => {
-      if (probeRef.current) {
-        setRowH(probeRef.current.getBoundingClientRect().height);
-      }
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
-
-  const effectiveRowH = rowH || 64; // fallback if not yet measured
-
   return (
-    <div
-      className="relative mt-4 overflow-hidden"
-      style={{ height: effectiveRowH }}
-    >
-      <div
-        className="flex flex-col will-change-transform transition-transform duration-700 ease-in-out text-blue-300"
-        style={{ transform: `translateY(-${index * effectiveRowH}px)` }}
-      >
-        {texts.map((t, i) => (
-          <div
-            key={i}
-            ref={i === 0 ? probeRef : null}
-            className="flex items-center"
-            style={{ height: effectiveRowH }}
-          >
-            {t}
-          </div>
-        ))}
-      </div>
+    <div className="relative mt-4 h-12 flex items-center justify-center lg:justify-start">
+      {texts.map((t, i) => (
+        <span
+          key={i}
+          className={`absolute text-2xl md:text-3xl lg:text-4xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-green-300 to-blue-400 transition-all duration-700 ease-in-out ${
+            i === index
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 -translate-y-6"
+          }`}
+        >
+          {t}
+        </span>
+      ))}
     </div>
   );
 }
