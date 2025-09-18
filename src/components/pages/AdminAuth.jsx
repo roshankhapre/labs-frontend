@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAdmin, registerAdmin } from "@/api/adminApi";
+import { loginAdmin, registerAdmin } from "@/api/axios";
 
 export default function AdminAuth() {
   const [isLogin, setIsLogin] = useState(true);
