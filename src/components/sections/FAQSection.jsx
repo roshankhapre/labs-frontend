@@ -185,12 +185,6 @@ export default function FAQSection() {
             >
               <FaPhone className="mr-2" /> Call Us: +91 9826043016
             </a>
-            <a
-              href="mailto:support@healthlab.com"
-              className="border border-white text-white font-medium py-3 px-6 rounded-lg hover:bg-white hover:text-blue-600 transition-colors"
-            >
-              Email Support
-            </a>
           </div>
         </div>
       </div>

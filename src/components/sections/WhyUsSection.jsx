@@ -9,6 +9,7 @@ import {
   FaMapMarkerAlt,
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const reasons = [
   {
@@ -50,6 +51,7 @@ const stats = [
 
 export default function WhyUsSection() {
   const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -158,7 +160,10 @@ export default function WhyUsSection() {
           <p className="text-gray-600 mb-6">
             Ready to experience the difference?
           </p>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+          <button
+            onClick={() => navigate("/book-test")} // <-- navigate to booking page
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+          >
             Book Your Test Now
           </button>
         </div>

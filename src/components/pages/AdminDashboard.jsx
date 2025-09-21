@@ -24,6 +24,8 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
+  MapPin,
+  Hash,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -50,6 +52,11 @@ export default function AdminDashboard() {
     fetchBookings();
   }, []);
 
+  // Function to generate a reference ID (LB + random 4-digit number)
+  const generateReferenceId = () => {
+    return `LB${Math.floor(1000 + Math.random() * 9000)}`;
+  };
+
   const fetchBookings = async () => {
     try {
       setLoading(true);
@@ -68,16 +75,22 @@ export default function AdminDashboard() {
         bookingsData = data.bookings;
       }
 
+      // Add reference ID to each booking if it doesn't exist
+      const bookingsWithRef = bookingsData.map((booking) => ({
+        ...booking,
+        referenceId: booking.referenceId || generateReferenceId(),
+      }));
+
       // Sort by date (newest first)
-      bookingsData.sort(
+      bookingsWithRef.sort(
         (a, b) =>
           new Date(b.createdAt || b.bookingDate) -
           new Date(a.createdAt || a.bookingDate)
       );
-      setBookings(bookingsData);
+      setBookings(bookingsWithRef);
 
       // Calculate stats
-      calculateStats(bookingsData);
+      calculateStats(bookingsWithRef);
     } catch (error) {
       console.error("Failed to fetch bookings:", error);
       setBookings([]);
@@ -167,7 +180,9 @@ export default function AdminDashboard() {
         booking.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         booking.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         booking.phone?.includes(searchTerm) ||
-        booking._id?.toLowerCase().includes(searchTerm.toLowerCase());
+        booking.referenceId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (booking.address &&
+          booking.address.toLowerCase().includes(searchTerm.toLowerCase()));
 
       const matchesStatus =
         statusFilter === "all" || booking.status === statusFilter;
@@ -234,6 +249,19 @@ export default function AdminDashboard() {
       minute: "2-digit",
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const formatAppointmentDate = (dateString, timeString) => {
+    if (!dateString) return "N/A";
+
+    const date = new Date(dateString);
+    const options = { year: "numeric", month: "short", day: "numeric" };
+
+    if (timeString) {
+      return `${date.toLocaleDateString(undefined, options)} at ${timeString}`;
+    }
+
+    return date.toLocaleDateString(undefined, options);
   };
 
   return (
@@ -365,7 +393,7 @@ export default function AdminDashboard() {
               />
               <input
                 type="text"
-                placeholder="Search by name, email, phone or ID..."
+                placeholder="Search by name, email, phone, reference ID or address..."
                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -501,9 +529,12 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="flex items-center justify-between mb-4">
-                    <div className="text-sm text-gray-500">Booking ID</div>
-                    <div className="text-sm font-mono text-gray-700">
-                      {booking._id?.substring(0, 8)}...
+                    <div className="text-sm text-gray-500 flex items-center">
+                      <Hash size={14} className="mr-1" />
+                      Reference ID
+                    </div>
+                    <div className="text-sm font-mono text-blue-700 font-semibold">
+                      {booking.referenceId}
                     </div>
                   </div>
 
@@ -512,7 +543,13 @@ export default function AdminDashboard() {
                       <IndianRupee size={20} />
                       {booking.paidAmount || "0"}
                     </div>
-                    <div className="text-xs font-normal px-2 py-1 bg-gray-100 rounded-md text-gray-600">
+                    <div
+                      className={`text-xs font-normal px-2 py-1 rounded-md ${
+                        booking.paymentStatus === "Paid"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
                       {booking.paymentStatus || "Not Paid"}
                     </div>
                   </div>
@@ -529,16 +566,24 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="text-sm text-gray-600">
-                      <div className="font-medium mb-1">Appointment</div>
+                      <div className="font-medium mb-1 flex items-center">
+                        <CalendarDays size={14} className="mr-1" />
+                        Appointment
+                      </div>
                       <div>
-                        {booking.appointmentDate || "N/A"} at{" "}
-                        {booking.appointmentTime || "N/A"}
+                        {formatAppointmentDate(
+                          booking.appointmentDate,
+                          booking.appointmentTime
+                        )}
                       </div>
                     </div>
 
                     {booking.address && (
                       <div className="text-sm text-gray-600">
-                        <div className="font-medium mb-1">Address</div>
+                        <div className="font-medium mb-1 flex items-center">
+                          <MapPin size={14} className="mr-1" />
+                          Address
+                        </div>
                         <div className="truncate">{booking.address}</div>
                       </div>
                     )}
@@ -550,7 +595,7 @@ export default function AdminDashboard() {
                         <div className="text-sm font-medium text-gray-700 mb-2">
                           Update Status
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
                           {[
                             "Pending",
                             "Confirmed",

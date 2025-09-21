@@ -10,8 +10,10 @@ import {
 } from "lucide-react";
 import heroImage from "../../assets/examining-sample-with-microscope.webp";
 import { useState, useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function HeroSection() {
+  const navigate = useNavigate();
   const texts = [
     "Book Blood Tests at Home",
     "Health Reports in 24 Hours",
@@ -73,11 +75,17 @@ export default function HeroSection() {
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mb-12">
-            <button className="bg-green-500 hover:bg-green-600 text-white text-lg font-medium px-6 py-3 rounded-full shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2">
+            <button
+              onClick={() => navigate("/book-test")}
+              className="bg-green-500 hover:bg-green-600 text-white text-lg font-medium px-6 py-3 rounded-full shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+            >
               Book Test Now <ArrowRight className="w-5 h-5" />
             </button>
-            <button className="border border-white text-white hover:bg-white hover:text-blue-800 text-lg font-medium px-6 py-3 rounded-full shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-              View Packages
+            <button
+              onClick={() => navigate("/tests")}
+              className="border border-white text-white hover:bg-white hover:text-blue-800 text-lg font-medium px-6 py-3 rounded-full shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              View All Tests
             </button>
           </div>
 

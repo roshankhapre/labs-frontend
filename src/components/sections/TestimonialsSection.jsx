@@ -1,11 +1,7 @@
-import {
-  FaStar,
-  FaQuoteLeft,
-  FaUserCircle,
-  FaArrowLeft,
-  FaArrowRight,
-} from "react-icons/fa";
+import { FaStar, FaQuoteLeft, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import { Heart, Award, Users, Calendar } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function TestimonialsSection() {
   const testimonials = [
@@ -18,6 +14,7 @@ export default function TestimonialsSection() {
       image:
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80",
       location: "Bangalore",
+      date: "2 days ago",
     },
     {
       name: "Anjali Mehra",
@@ -28,6 +25,7 @@ export default function TestimonialsSection() {
       image:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80",
       location: "Mumbai",
+      date: "1 week ago",
     },
     {
       name: "Dr. Vikram Singh",
@@ -38,6 +36,7 @@ export default function TestimonialsSection() {
       image:
         "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80",
       location: "Delhi",
+      date: "3 days ago",
     },
     {
       name: "Priya Patel",
@@ -48,6 +47,7 @@ export default function TestimonialsSection() {
       image:
         "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80",
       location: "Ahmedabad",
+      date: "5 days ago",
     },
     {
       name: "Rajesh Kumar",
@@ -58,30 +58,44 @@ export default function TestimonialsSection() {
       image:
         "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80",
       location: "Hyderabad",
+      date: "2 weeks ago",
     },
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(3);
+
+  useEffect(() => {
+    const updateVisibleCount = () => {
+      if (window.innerWidth < 768) setVisibleCount(1);
+      else if (window.innerWidth < 1024) setVisibleCount(2);
+      else setVisibleCount(3);
+    };
+
+    updateVisibleCount();
+    window.addEventListener("resize", updateVisibleCount);
+    return () => window.removeEventListener("resize", updateVisibleCount);
+  }, []);
 
   useEffect(() => {
     if (!isAutoPlaying) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     }, 5000);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, testimonials.length]);
 
   const nextTestimonial = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     setIsAutoPlaying(false);
   };
 
   const prevTestimonial = () => {
     setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + testimonials.length) % testimonials.length
+      (prev) => (prev - 1 + testimonials.length) % testimonials.length
     );
     setIsAutoPlaying(false);
   };
@@ -91,43 +105,27 @@ export default function TestimonialsSection() {
     setIsAutoPlaying(false);
   };
 
-  const getVisibleCount = () => {
-    if (typeof window === "undefined") return 3;
-    if (window.innerWidth < 768) return 1;
-    if (window.innerWidth < 1024) return 2;
-    return 3;
-  };
-
-  const [visibleCount, setVisibleCount] = useState(getVisibleCount());
-
-  useEffect(() => {
-    const handleResize = () => {
-      setVisibleCount(getVisibleCount());
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const visibleTestimonials = [];
   for (let i = 0; i < visibleCount; i++) {
     const index = (currentIndex + i) % testimonials.length;
     visibleTestimonials.push(testimonials[index]);
   }
+  const navigate = useNavigate();
 
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-b from-white to-blue-50 relative overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute top-0 left-0 w-full h-72 bg-blue-50 opacity-30"></div>
-      <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-blue-100 opacity-20"></div>
-      <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-purple-100 opacity-20"></div>
+    <section className="py-16 md:py-24 bg-gradient-to-b from-blue-50 to-white relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-10 left-10 w-72 h-72 bg-blue-200 rounded-full opacity-10 blur-3xl"></div>
+      <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-200 rounded-full opacity-10 blur-3xl"></div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
-            Trusted by{" "}
-            <span className="text-blue-600">Thousands of Patients</span>
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <Heart className="h-4 w-4 mr-2" /> Trusted by Thousands
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            What Our <span className="text-blue-600">Patients Say</span>
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
             Don't just take our word for it. Here's what our patients have to
@@ -135,12 +133,12 @@ export default function TestimonialsSection() {
           </p>
         </div>
 
-        {/* Testimonials Carousel */}
-        <div className="relative max-w-6xl mx-auto">
+        {/* Testimonials */}
+        <div className="relative max-w-7xl mx-auto mb-16">
           {/* Navigation Arrows */}
           <button
             onClick={prevTestimonial}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 md:-translate-x-8 z-10 bg-white p-3 rounded-full shadow-lg hover:bg-blue-50 transition-colors hidden md:flex items-center justify-center"
+            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white p-4 rounded-full shadow-lg hover:bg-blue-50 transition-all hover:scale-110 hidden lg:flex items-center justify-center"
             aria-label="Previous testimonial"
           >
             <FaArrowLeft className="text-blue-600 text-lg" />
@@ -148,67 +146,76 @@ export default function TestimonialsSection() {
 
           <button
             onClick={nextTestimonial}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 md:translate-x-8 z-10 bg-white p-3 rounded-full shadow-lg hover:bg-blue-50 transition-colors hidden md:flex items-center justify-center"
+            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white p-4 rounded-full shadow-lg hover:bg-blue-50 transition-all hover:scale-110 hidden lg:flex items-center justify-center"
             aria-label="Next testimonial"
           >
             <FaArrowRight className="text-blue-600 text-lg" />
           </button>
 
           {/* Testimonials Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {visibleTestimonials.map((testimonial, index) => (
               <div
                 key={testimonial.name + index}
-                className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 h-full flex flex-col"
+                className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 group"
               >
-                <div className="text-blue-100 text-4xl mb-4">
+                {/* Quote icon */}
+                <div className="text-blue-100 text-5xl mb-6 transform group-hover:scale-110 transition-transform">
                   <FaQuoteLeft />
                 </div>
-                <div className="flex justify-start mb-4">
+
+                {/* Stars */}
+                <div className="flex mb-6">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <FaStar
-                      key={i}
-                      className="text-yellow-400 text-sm md:text-base"
-                    />
+                    <FaStar key={i} className="text-yellow-400 text-lg" />
                   ))}
                 </div>
-                <p className="text-gray-700 mb-6 flex-grow text-sm md:text-base leading-relaxed">
+
+                {/* Feedback */}
+                <p className="text-gray-700 mb-8 text-base leading-relaxed">
                   "{testimonial.feedback}"
                 </p>
-                <div className="flex items-center mt-auto pt-4 border-t border-gray-100">
-                  <div className="flex-shrink-0 mr-4">
+
+                {/* Author */}
+                <div className="flex items-center mt-auto pt-6 border-t border-gray-100">
+                  <div className="flex-shrink-0 mr-4 relative">
                     <img
                       src={testimonial.image}
                       alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover"
+                      className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md"
                     />
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                    </div>
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-semibold text-gray-900">
                       {testimonial.name}
                     </p>
                     <p className="text-sm text-gray-600">{testimonial.role}</p>
-                    <p className="text-xs text-gray-500">
-                      {testimonial.location}
-                    </p>
+                    <div className="flex items-center text-xs text-gray-500 mt-1">
+                      <span>{testimonial.location}</span>
+                      <span className="mx-2">•</span>
+                      <span>{testimonial.date}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Mobile Navigation Arrows */}
-          <div className="flex justify-center mt-8 md:hidden">
+          {/* Mobile Navigation */}
+          <div className="flex justify-center mt-8 lg:hidden">
             <button
               onClick={prevTestimonial}
-              className="bg-white p-3 rounded-full shadow-lg hover:bg-blue-50 transition-colors mx-2"
+              className="bg-white p-3 rounded-full shadow-lg hover:bg-blue-50 transition-all mx-2"
               aria-label="Previous testimonial"
             >
               <FaArrowLeft className="text-blue-600" />
             </button>
             <button
               onClick={nextTestimonial}
-              className="bg-white p-3 rounded-full shadow-lg hover:bg-blue-50 transition-colors mx-2"
+              className="bg-white p-3 rounded-full shadow-lg hover:bg-blue-50 transition-all mx-2"
               aria-label="Next testimonial"
             >
               <FaArrowRight className="text-blue-600" />
@@ -217,51 +224,83 @@ export default function TestimonialsSection() {
 
           {/* Dots Indicator */}
           <div className="flex justify-center mt-8">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToTestimonial(index)}
-                className={`w-2 h-2 rounded-full mx-1 ${
-                  index === currentIndex ? "bg-blue-600" : "bg-gray-300"
-                }`}
-                aria-label={`Go to testimonial ${index + 1}`}
-              />
-            ))}
+            {testimonials
+              .slice(0, testimonials.length - visibleCount + 1)
+              .map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToTestimonial(index)}
+                  className={`w-3 h-3 rounded-full mx-1 transition-all ${
+                    index === currentIndex
+                      ? "bg-blue-600 scale-125"
+                      : "bg-gray-300 hover:bg-gray-400"
+                  }`}
+                  aria-label={`Go to testimonial ${index + 1}`}
+                />
+              ))}
           </div>
         </div>
 
-        {/* Trust Badges */}
-        <div className="mt-16 bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-center md:text-left">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Rated 4.9/5 by 2,500+ Patients
-              </h3>
-              <p className="text-gray-600">
-                Join thousands of satisfied customers who trust HealthLab with
-                their health
-              </p>
+        {/* Stats Section */}
+        <div className="bg-white rounded-3xl shadow-lg p-8 border border-gray-100">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="text-center">
+              <div className="bg-blue-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Users className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">2,500+</h3>
+              <p className="text-gray-600">Happy Patients</p>
             </div>
-            <div className="flex flex-wrap justify-center gap-4">
-              <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg flex items-center text-sm">
-                <FaStar className="mr-2 text-yellow-400" />{" "}
-                <span>4.9/5 Rating</span>
+            <div className="text-center">
+              <div className="bg-green-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Award className="h-8 w-8 text-green-600" />
               </div>
-              <div className="bg-green-50 text-green-700 px-4 py-2 rounded-lg flex items-center text-sm">
-                <FaUserCircle className="mr-2" /> <span>2,500+ Reviews</span>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">4.9/5</h3>
+              <p className="text-gray-600">Average Rating</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-purple-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Calendar className="h-8 w-8 text-purple-600" />
               </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">24H</h3>
+              <p className="text-gray-600">Report Time</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-orange-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Heart className="h-8 w-8 text-orange-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">98%</h3>
+              <p className="text-gray-600">Satisfaction Rate</p>
             </div>
           </div>
         </div>
 
         {/* CTA Section */}
-        <div className="mt-12 text-center">
-          <p className="text-gray-600 mb-6">
-            Ready to experience our 5-star service?
+        <div className="text-center mt-16">
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            Ready to Experience Our 5-Star Service?
+          </h3>
+          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+            Join thousands of satisfied patients who trust HealthLab with their
+            health diagnostics
           </p>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-            Book Your Test Now
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => navigate("/book-test")}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 px-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+              >
+                Book Your Test Now
+              </button>
+
+              <button
+                onClick={() => navigate("/tests")}
+                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium py-4 px-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+              >
+                View All Tests
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>

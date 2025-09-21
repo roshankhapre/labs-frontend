@@ -15,6 +15,7 @@ import {
   Award,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const packages = [
   {
@@ -104,6 +105,7 @@ const packages = [
 
 export default function PackagesSection() {
   const [activeCategory, setActiveCategory] = useState("all");
+  const navigate = useNavigate();
 
   const categories = [
     {
@@ -149,24 +151,6 @@ export default function PackagesSection() {
             </span>
             .
           </p>
-        </div>
-
-        {/* Category Filters */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
-              className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                activeCategory === category.id
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
-              }`}
-            >
-              <span className="mr-2">{category.icon}</span>
-              {category.label}
-            </button>
-          ))}
         </div>
 
         {/* Package Cards */}
@@ -229,7 +213,10 @@ export default function PackagesSection() {
                   </ul>
 
                   {/* CTA */}
-                  <button className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group/btn">
+                  <button
+                    onClick={() => navigate("/book-test")} // <-- navigate on click
+                    className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group/btn"
+                  >
                     Book Now
                     <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                   </button>
@@ -304,11 +291,17 @@ export default function PackagesSection() {
             Need help choosing the right package?
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
-              Speak to Our Expert
-            </button>
-            <button className="border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-3 px-8 rounded-lg transition-all duration-300">
-              View All Packages
+            <a href="tel:9826043016">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+                Speak to Our Expert
+              </button>
+            </a>
+
+            <button
+              onClick={() => navigate("/tests")}
+              className="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg font-medium px-8  rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              View All Tests
             </button>
           </div>
         </div>
