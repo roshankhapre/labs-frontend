@@ -128,7 +128,7 @@ export default function PackagesSection() {
 
   return (
     <section
-      className="py-16 md:py-24 bg-gradient-to-b from-white to-blue-50 relative overflow-hidden"
+      className="py-20 md:py-24 bg-gradient-to-b from-white to-blue-50 relative overflow-hidden"
       id="packages"
     >
       {/* Background elements */}

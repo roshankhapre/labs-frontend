@@ -13,6 +13,8 @@ import TestsPage from "./components/sections/TestsPage";
 import AboutUsSection from "./components/sections/AboutUsSection";
 import ContactSection from "./components/sections/ContactSection";
 import PackagesSection from "./components/sections/PackagesSection";
+import NotFound from "./components/sections/NotFound";
+import ScrollToTop from "./components/sections/ScrollToTop";
 
 export default function App() {
   return (
@@ -20,6 +22,8 @@ export default function App() {
       <Navbar />
 
       <main className="flex-1">
+        <ScrollToTop />
+
         <Routes>
           <Route
             path="/"
@@ -29,6 +33,7 @@ export default function App() {
               </>
             }
           />
+          <Route path="*" element={<NotFound />} />
           <Route path="/book-test" element={<BookingSection />} />
           <Route path="/about" element={<AboutUsSection />} />
           <Route path="/tests" element={<TestsPage />} />

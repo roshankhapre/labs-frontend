@@ -15,11 +15,12 @@ import {
   Phone,
   Mail,
 } from "lucide-react";
-import API, { createPaymentOrder, verifyPayment } from "@/api/axios"; // <<-- important!
+import API, { createPaymentOrder, verifyPayment } from "@/api/axios";
 
 export default function BookingSection() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [bookingId, setBookingId] = useState(""); // ✅ ADD THIS STATE
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -65,11 +66,7 @@ export default function BookingSection() {
   const handlePayment = async () => {
     setIsLoading(true);
     try {
-      // Create order via your API wrapper (will use VITE_API_BASE_URL in prod)
-      // pass amount if your backend expects it; else backend can use default
       const { data } = await createPaymentOrder({ amount: 50 });
-      // debug:
-      console.log("createPaymentOrder response:", data);
 
       if (!window.Razorpay) {
         alert("Razorpay SDK not loaded. Please refresh the page.");
@@ -78,7 +75,7 @@ export default function BookingSection() {
       }
 
       const options = {
-        key: data.key, // razorpay key from backend
+        key: data.key,
         amount: data.amount,
         currency: data.currency || "INR",
         order_id: data.order_id,
@@ -87,14 +84,11 @@ export default function BookingSection() {
         handler: async function (response) {
           setIsLoading(true);
           try {
-            // Verify payment via API wrapper
             const verificationResponse = await verifyPayment({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             });
-
-            console.log("verifyPayment response:", verificationResponse?.data);
 
             if (verificationResponse?.data?.success) {
               // Save booking using the API instance
@@ -113,7 +107,11 @@ export default function BookingSection() {
                 },
               });
 
+              console.log("Booking response:", bookingRes.data); // Debug log
+
               if (bookingRes?.data?.success) {
+                // ✅ STORE THE BOOKING ID FROM BACKEND
+                setBookingId(bookingRes.data.bookingId);
                 setStep(4);
               } else {
                 alert(
@@ -125,9 +123,7 @@ export default function BookingSection() {
             }
           } catch (err) {
             console.error("Error in payment handler:", err);
-            alert(
-              "An error occurred while verifying/saving payment. Contact support."
-            );
+            alert("An error occurred. Contact support.");
           } finally {
             setIsLoading(false);
           }
@@ -146,7 +142,7 @@ export default function BookingSection() {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (err) {
-      console.error("Razorpay error (start):", err);
+      console.error("Razorpay error:", err);
       alert("Failed to start payment. Try again.");
       setIsLoading(false);
     }
@@ -161,7 +157,7 @@ export default function BookingSection() {
 
   return (
     <section
-      className="py-16 px-4 bg-gradient-to-br from-blue-50 via-white to-indigo-50"
+      className="py-32 px-4 bg-gradient-to-br from-blue-50 via-white to-indigo-50"
       id="booking"
     >
       <div className="max-w-5xl mx-auto">
@@ -460,10 +456,9 @@ export default function BookingSection() {
                       <span className="font-medium">{form.time}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Reference ID:</span>
-                      <span className="font-medium">
-                        LB{Math.floor(1000 + Math.random() * 9000)}
-                      </span>
+                      <span className="text-gray-600">Booking ID:</span>
+                      {/* ✅ USE THE REAL BOOKING ID FROM BACKEND */}
+                      <span className="font-medium">{bookingId}</span>
                     </div>
                   </div>
                 </div>
@@ -480,6 +475,7 @@ export default function BookingSection() {
                       time: "",
                       address: "",
                     });
+                    setBookingId(""); // ✅ Reset booking ID
                   }}
                   className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6"
                 >
